@@ -1,5 +1,7 @@
 print('log in lua')
-f = function (x, y)
-    print('LUA: function f', x, y)
-    return x + y
+f = function ()
+    width =200
+    height = 300
+    title = "hello"
+    return width, height, title
 end

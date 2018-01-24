@@ -148,7 +148,13 @@ dump(lua_State *L) {
     return 0;
 }
 
-int f(lua_State *L, int x, int y) {
+struct Config {
+    int width;
+    int height;
+    char * title;
+};
+
+int f(lua_State *L, struct Config *config) {
     int z;
 
     dump(L); // 0
@@ -156,22 +162,30 @@ int f(lua_State *L, int x, int y) {
     // 压入函数和参数
     lua_getglobal(L, "f");
     dump(L); // 1
-    lua_pushnumber(L, x);
-    lua_pushnumber(L, y);
-    dump(L); // 3
 
-    if(lua_pcall(L, 2, 1, 0) != 0) {
+    if(lua_pcall(L, 0, 3, 0) != 0) {
         printf("LUA ERROR: %s \n", lua_tostring(L, -1));
     }
 
-    dump(L); // 1
+    dump(L); // 3 弹出一个, 压入 3 个
 
     // 获取结果
-    z = lua_tonumber(L, -1);
-    printf("z %d", z);
+    int w = lua_tonumber(L, -3);
+    int h = lua_tonumber(L, -2);
+    const char *title = lua_tostring(L, -1);
+//    printf("w %d", w);
+//    printf("h %d", h);
+//    printf("title %s", title);
+
+
+    config->height = h;
+    config->width = w;
+    config->title = title;
     lua_pop(L, 1);
     return z;
 }
+
+
 
 int
 main(void) {
@@ -183,10 +197,15 @@ main(void) {
     }
 
     // 加载配置
-    int x = 1;
-    int y = 2;
-    int z = f(L, x, y);
-    printf("z %d \n", z);
+    struct Config *config;
+    f(L, config);
+
+    int w = config->width;
+    int h = config->height;
+    char *title;
+    title = config->title;
+
+    printf("w: %d, h: %d, title: %s \n", w, h, title);
 
     lua_close(L);
 
