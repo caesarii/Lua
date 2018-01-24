@@ -142,23 +142,51 @@ loadConfig(lua_State *L, const char *fname, int *w, int *h, int *title) {
 }
 
 int
+dump(lua_State *L) {
+    int n = lua_gettop(L);
+    printf("LUA STACK TOP %d \n", n);
+    return 0;
+}
+
+int f(lua_State *L, int x, int y) {
+    int z;
+
+    dump(L); // 0
+
+    // 压入函数和参数
+    lua_getglobal(L, "f");
+    dump(L); // 1
+    lua_pushnumber(L, x);
+    lua_pushnumber(L, y);
+    dump(L); // 3
+
+    if(lua_pcall(L, 2, 1, 0) != 0) {
+        printf("LUA ERROR: %s \n", lua_tostring(L, -1));
+    }
+
+    dump(L); // 1
+
+    // 获取结果
+    z = lua_tonumber(L, -1);
+    printf("z %d", z);
+    lua_pop(L, 1);
+    return z;
+}
+
+int
 main(void) {
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
-
-    // 栈操作
-    // stackOperate(L);
+    if(luaL_dofile(L, "config.lua")) {
+        printf("LUA ERROR: %s\n", lua_tostring(L, -1));
+        return -1;
+    }
 
     // 加载配置
-    const char *path = "gua.lua";
-    int width;
-    int height;
-    int header;
-    int *w = &width;
-    int *h = &height;
-    int *title = &header;
-    loadConfig(L, path, w, h, title);
-    printf("width: %d  height: %d title: %d", *w, *h, *title);
+    int x = 1;
+    int y = 2;
+    int z = f(L, x, y);
+    printf("z %d \n", z);
 
     lua_close(L);
 

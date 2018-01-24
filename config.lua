@@ -1,3 +1,5 @@
--- 定义窗口标题, 宽度, 高度
-width = 200
-height = 300
+print('log in lua')
+f = function (x, y)
+    print('LUA: function f', x, y)
+    return x + y
+end
