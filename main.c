@@ -173,10 +173,6 @@ int f(lua_State *L, struct Config *config) {
     int w = lua_tonumber(L, -3);
     int h = lua_tonumber(L, -2);
     const char *title = lua_tostring(L, -1);
-//    printf("w %d", w);
-//    printf("h %d", h);
-//    printf("title %s", title);
-
 
     config->height = h;
     config->width = w;
