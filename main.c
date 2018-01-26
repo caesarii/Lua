@@ -186,15 +186,17 @@ static int l_sin(lua_State *L) {
     double d = lua_tonumber(L, 1);
     lua_pushnumber(L, d);
     return 1;
-}
+};
+
 
 int
 main(void) {
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
 
-    lua_pushcfunction(L, l_sin);
-    lua_setglobal(L, "mysin");
+
+    lua_register(L, "mysin", l_sin);
+
 
     // ÔËÐÐ lua ´úÂë
     const char *code = "print('LUA CODE',mysin(66))";
