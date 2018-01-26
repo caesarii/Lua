@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
@@ -181,27 +182,25 @@ int f(lua_State *L, struct Config *config) {
     return z;
 }
 
-
+static int l_sin(lua_State *L) {
+    double d = lua_tonumber(L, 1);
+    lua_pushnumber(L, d);
+    return 1;
+}
 
 int
 main(void) {
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
-    if(luaL_dofile(L, "config.lua")) {
-        printf("LUA ERROR: %s\n", lua_tostring(L, -1));
-        return -1;
+
+    lua_pushcfunction(L, l_sin);
+    lua_setglobal(L, "mysin");
+
+    // 运行 lua 代码
+    const char *code = "print('LUA CODE',mysin(66))";
+    if(luaL_dostring(L, code)) {
+        printf("LUA ERROR: %s \n", lua_tostring(L, -1));
     }
-
-    // 加载配置
-    struct Config *config;
-    f(L, config);
-
-    int w = config->width;
-    int h = config->height;
-    char *title;
-    title = config->title;
-
-    printf("w: %d, h: %d, title: %s \n", w, h, title);
 
     lua_close(L);
 
